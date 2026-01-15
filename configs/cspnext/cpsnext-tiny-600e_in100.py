@@ -2,10 +2,16 @@ _base_ = './cspnext-s_8xb256-rsb-a1-600e_in1k.py'
 work_dir = "./work_dir/cspnext-tiny-600e_in100"
 # act_cfg = dict(type='ReLU6', inplace=True)
 
+data_preprocessor = dict(
+    type='ClsDataPreprocessor',
+    num_classes=100,
+    mean=[123.675, 116.28, 103.53],
+    std=[58.395, 57.12, 57.375],
+    to_rgb=True,
+)
+
 model = dict(
-    data_preprocessor=dict(
-        num_classes=100,  # ImageNet-100 이므로 100으로 설정
-    ),
+    data_preprocessor=data_preprocessor,
     backbone=dict(deepen_factor=0.167, widen_factor=0.375),
     head=dict(in_channels=384,
     num_classes=100))
@@ -23,7 +29,6 @@ test_pipeline = [
     dict(type='CenterCrop', crop_size=224),
     dict(type='PackInputs'),  # <--- [필수]
 ]
-
 train_dataloader = dict(
     batch_size=384,
     num_workers=12,
@@ -38,7 +43,7 @@ train_dataloader = dict(
 
 val_dataloader = dict(
     batch_size=384,
-    num_workers=12,
+    num_workers=36,
     dataset=dict(
         type='ImageNet',
         data_root='/mnt/hdd/OpenDataLab___ImageNet-100/raw/MyImagenet',
